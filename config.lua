@@ -17,6 +17,7 @@ lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
 lvim.builtin.nvimtree.setup.renderer.icons.show.git = false
 
+
 lvim.builtin.dap.active = true
 -- if you don't want all the parsers change this to a table of the ones you want
 lvim.builtin.treesitter.ensure_installed = {
@@ -37,33 +38,69 @@ lvim.builtin.treesitter.ensure_installed = {
 lvim.builtin.treesitter.ignore_install = { "haskell" }
 lvim.builtin.treesitter.highlight.enabled = true
 
-
 lvim.plugins = {
   { 'akinsho/flutter-tools.nvim',
     requires = 'nvim-lua/plenary.nvim' },
   { 'sainnhe/everforest' },
+  {
+    "tpope/vim-fugitive",
+    cmd = {
+      "G",
+      "Git",
+      "Gdiffsplit",
+      "Gread",
+      "Gwrite",
+      "Ggrep",
+      "GMove",
+      "GDelete",
+      "GBrowse",
+      "GRemove",
+      "GRename",
+      "Glgrep",
+      "Gedit"
+    },
+    ft = { "fugitive" }
+  },
+  {
+    "folke/persistence.nvim",
+    event = "BufReadPre", -- this will only start session saving when an actual file was opened
+    module = "persistence",
+    config = function()
+      require("persistence").setup()
+    end,
+  },
+  {
+    "Pocco81/auto-save.nvim",
+    config = function()
+      require("auto-save").setup()
+    end,
+  },
 }
+
+lvim.builtin.treesitter.rainbow.enable = true
+
+
 lvim.builtin.dap.on_config_done = function(dap)
   dap.adapters.dart = {
     type = "executable",
     command = "node",
-    args = { "/Users/ahrar/Dart-Code/out/dist/debug.js", "flutter" }
+    args = { os.getenv('HOME') .. "/Dart-Code/out/dist/debug.js", "flutter" }
   }
   dap.configurations.dart = {
     {
       type = "dart",
       request = "launch",
       name = "Launch flutter",
-      dartSdkPath = "/Users/ahrar/Development/flutter/bin/cache/dart-sdk/",
-      flutterSdkPath = "/Users/ahrar/Development/flutter",
+      dartSdkPath = os.getenv('HOME') .. "/Development/flutter/bin/cache/dart-sdk/",
+      flutterSdkPath = os.getenv('HOME') .. "/Development/flutter",
       program = "${workspaceFolder}/lib/main.dart",
       cwd = "${workspaceFolder}",
     },
     {
-      dartSdkPath = "/Users/ahrar/Development/flutter/bin/cache/dart-sdk/",
+      dartSdkPath = os.getenv('HOME') .. "/Development/flutter/bin/cache/dart-sdk/",
+      flutterSdkPath = os.getenv('HOME') .. "/Development/flutter",
       name = "Flutter Dev",
       request = "launch",
-      flutterSdkPath = "/Users/ahrar/Development/flutter",
       type = "dart",
       program = "${workspaceFolder}/lib/main_dev.dart",
       args = { "--flavor", "dev" },
@@ -89,12 +126,12 @@ require("flutter-tools").setup {
     enabled = true,
     run_via_dap = true, -- use dap instead of a plenary job to run flutter apps
     register_configurations = function(paths)
-      lvim.dap.configurations.dart = {
+      require("dap").configurations.dart = {
         {
-          dartSdkPath = "/Users/ahrar/Development/flutter/bin/cache/dart-sdk/",
+          dartSdkPath = os.getenv('Home') .. "/Development/flutter/bin/cache/dart-sdk/",
           name = "Flutter Dev",
           request = "launch",
-          flutterSdkPath = "/Users/ahrar/Development/flutter",
+          flutterSdkPath = os.getenv('Home') .. "/Development/flutter",
           type = "dart",
           program = "lib/main_dev.dart",
           args = { "--flavor", "dev" },
